@@ -21,12 +21,11 @@ router.post("/", async function (req, res) {
       .status(401)
       .send({ success: false, message: "Bad username/password combination. " });
   } else {
-    let payload = { email: employee.email, password: employee.password };
+    let payload = { email: employee.email };
     let token = jwt.sign(payload, "i7ufdsS", { expiresIn: 10 });
     res.send(token);
   }
 });
-
 // middleware for token check
 function checkToken(req, res, next) {
   let token = req.headers["x-access-token"];
@@ -37,6 +36,7 @@ function checkToken(req, res, next) {
           .status(401)
           .json({ success: false, message: "Failed to authenticate token." });
       } else {
+        res.send(decoded);
         // some business logic here
         next();
       }
@@ -45,7 +45,5 @@ function checkToken(req, res, next) {
   }
 }
 
-router.get("/employees", checkToken, function (req, res) {
-  res.json(data);
-});
+router.get("/employees", checkToken, function (req, res) {});
 module.exports = router;
