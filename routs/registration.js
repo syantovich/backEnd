@@ -26,9 +26,10 @@ router.post("/", express.urlencoded({ extended: false }), async (req, res) => {
     email: req.body.email,
     password: x,
   };
+
   await User.create(body, function (err, doc) {
-    if (err) return res.send("false");
-    res.send("true");
+    if (err) return res.send(false);
+    res.send(true);
   });
 });
 

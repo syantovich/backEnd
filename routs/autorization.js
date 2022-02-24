@@ -22,7 +22,7 @@ router.post("/", async function (req, res) {
       .send({ success: false, message: "Bad username/password combination. " });
   } else {
     let payload = { email: employee.email };
-    let token = jwt.sign(payload, "i7ufdsS", { expiresIn: 10 });
+    let token = jwt.sign(payload, "i7ufdsS");
     res.send(token);
   }
 });

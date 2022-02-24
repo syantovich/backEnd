@@ -11,6 +11,7 @@ const hallsRouts = require("./routs/halls");
 const movieRouts = require("./routs/movies");
 const sessionRouts = require("./routs/sessions");
 const movieInfoRouts = require("./routs/movieinfo");
+const cors = require("cors");
 
 mongoose.connect("mongodb://localhost:27017/usersdb", {
   useUnifiedTopology: true,
@@ -42,6 +43,7 @@ app.use(
   })
 );
 
+app.use(cors());
 app.use("/", homeRouts);
 app.use("/registration", regRouts);
 app.use("/getuser", getRouts);

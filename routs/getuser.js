@@ -16,14 +16,29 @@ router.get("/", (req, res) => {
 });
 router.post("/get", async (req, res) => {
   console.log(req.body);
-  await User.findOne(req.body, async function (err, user) {
-    if (err) {
-      res.send("Not found");
-      res.statusCode = 404;
+  const user = await User.aggregate(
+    [
+      {
+        $match: req.body,
+      },
+    ],
+    {},
+    (err) => {
+      if (err) {
+        res.send("Not found");
+        res.statusCode = 404;
+      }
     }
-    res.send(user);
-  });
+  );
+  if (user.length > 0) {
+    res.send(true);
+    console.log(true);
+  } else {
+    console.log(false);
+    res.send(false);
+  }
 });
+
 router.post(
   "/save",
   express.urlencoded({ extended: false }),
