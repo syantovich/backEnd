@@ -10,9 +10,8 @@ const router = Router();
 let data;
 router.post("/", async function (req, res) {
   data = await User.find({});
-  console.log(data);
+
   let employee = await _.find(data, { email: req.body.email });
-  console.log(employee);
   if (
     employee === undefined ||
     !(await bcrypt.compare(req.body.password, employee.password))
