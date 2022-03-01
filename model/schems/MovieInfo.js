@@ -1,10 +1,14 @@
 const mongoose = require("mongoose");
+const stream = require("stream");
 const Schema = mongoose.Schema;
 
 module.exports = new Schema({
   name: {
     type: String,
     required: true,
+  },
+  img: {
+    type: String,
   },
   actors: [{ type: String }],
   dateStart: {

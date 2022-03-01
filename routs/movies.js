@@ -1,23 +1,11 @@
 const { Router } = require("express");
 
 const mongoose = require("mongoose");
-const cinemaScheme = require("../model/schems/Cinema");
 const hallScheme = require("../model/schems/Hall");
 const movieShema = require("../model/schems/Movie");
 const router = Router();
 const Hall = mongoose.model("hall", hallScheme);
-const Cinema = mongoose.model("cinema", cinemaScheme);
 const Movie = mongoose.model("movie", movieShema);
-const agregate = Movie.aggregate([
-  {
-    $lookup: {
-      from: "movieinfos",
-      localField: "idMovieInfo",
-      foreignField: "_id",
-      as: "lookup",
-    },
-  },
-]);
 
 router.post("/addmovie", async (req, res) => {
   let hall = await Hall.findOne({ _id: req.body.idHall });
@@ -46,6 +34,7 @@ router.post("/addmovie", async (req, res) => {
     }
   );
 });
+
 router.get("/get", async (req, res) => {
   let limit = 5;
 

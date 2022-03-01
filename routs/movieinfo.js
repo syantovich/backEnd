@@ -25,6 +25,9 @@ router.post("/addmovieinfo", (req, res) => {
       fantasy: req.body.fantasy,
       cartoon: req.body.cartoon,
       thriller: req.body.thriller,
+      img:
+        req.body.img ||
+        "https://static.cdek.market/images/market/38acc9a2a52efb9e1bda3fa682eaad09.jpg",
     },
     (err, doc) => {
       if (!err) {
@@ -37,51 +40,38 @@ router.post("/addmovieinfo", (req, res) => {
     }
   );
 });
-router.get("/get", async (req, res) => {
-  let x = await Movie.aggregate([
-    {
-      $lookup: {
-        from: "halls",
-        localField: "idHall",
-        foreignField: "_id",
-        as: "hall",
-      },
-    },
-    {
-      $lookup: {
-        from: "sessions",
-        localField: "idSession",
-        foreignField: "_id",
-        as: "session",
-      },
-    },
-    {
-      $lookup: {
-        from: "movieinfos",
-        localField: "idMovieInfo",
-        foreignField: "_id",
-        as: "info",
-      },
-    },
-    {
-      $unwind: {
-        path: "$info",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $unwind: {
-        path: "$session",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $unwind: {
-        path: "$hall",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-  ]);
-  res.send(x);
+router.post("/getfilms", async (req, res) => {
+  let dataNow = new Date();
+  switch (req.body.type) {
+    case "now":
+      res.send(
+        await MovieInfo.aggregate([
+          {
+            $match: {
+              dateStart: { $lte: dataNow },
+              dateEnd: { $gte: dataNow },
+            },
+          },
+        ])
+      );
+      break;
+    case "soon":
+      res.send(
+        await MovieInfo.aggregate([
+          {
+            $match: {
+              dateStart: { $gte: dataNow },
+            },
+          },
+        ])
+      );
+      break;
+    default:
+      {
+        res.send([]);
+      }
+      break;
+  }
 });
+
 module.exports = router;
