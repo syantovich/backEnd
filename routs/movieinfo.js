@@ -73,5 +73,26 @@ router.post("/getfilms", async (req, res) => {
       break;
   }
 });
+router.post("/category", async (req, res) => {
+  let limit = 4;
+  const nameCategory = req.body.category;
+  let dataNow = new Date();
+  const allFilmsNow = await MovieInfo.aggregate([
+    {
+      $match: {
+        dateStart: { $lte: dataNow },
+        dateEnd: { $gte: dataNow },
+      },
+    },
+  ]);
+  let sortArr = allFilmsNow.filter((e) => e[nameCategory] == true);
+  const maxPage = Math.floor(sortArr.length / limit);
+  const skipedArr = sortArr.filter(
+    (e, i) => i < limit * req.body.page && i >= (req.body.page - 1) * limit
+  );
+  console.log(maxPage);
+  console.log(skipedArr);
+  res.send({ maxPage, skipedArr });
+});
 
 module.exports = router;

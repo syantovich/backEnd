@@ -36,9 +36,6 @@ router.post("/addmovie", async (req, res) => {
 });
 
 router.get("/get", async (req, res) => {
-  let limit = 5;
-
-  let skip = req.query.p ? (req.query.p - 1) * limit - 1 : 0;
   console.log(req.query.p);
   let x = await Movie.aggregate([
     {
@@ -83,8 +80,6 @@ router.get("/get", async (req, res) => {
         preserveNullAndEmptyArrays: true,
       },
     },
-    { $skip: skip },
-    { $limit: limit },
   ]);
   res.send(x);
 });
