@@ -3,12 +3,17 @@ const { Router } = require("express");
 const mongoose = require("mongoose");
 const hallScheme = require("../model/schems/Hall");
 const movieShema = require("../model/schems/Movie");
+const movieInfoShema = require("../model/schems/MovieInfo");
+
 const router = Router();
 const Hall = mongoose.model("hall", hallScheme);
 const Movie = mongoose.model("movie", movieShema);
+const ObjectId = mongoose.Types.ObjectId;
+const MovieInfo = mongoose.model("movieinfo", movieInfoShema);
 
 router.post("/addmovie", async (req, res) => {
   let hall = await Hall.findOne({ _id: req.body.idHall });
+  console.log(hall);
   let Arr = hall.places.map((e) => {
     e = e.map(() => {
       return 0;
@@ -35,23 +40,20 @@ router.post("/addmovie", async (req, res) => {
   );
 });
 
-router.get("/get", async (req, res) => {
-  console.log(req.query.p);
-  let x = await Movie.aggregate([
-    {
-      $lookup: {
-        from: "halls",
-        localField: "idHall",
-        foreignField: "_id",
-        as: "hall",
-      },
-    },
+router.post("/get/:id", async (req, res) => {
+  let sessions = await Movie.aggregate([
     {
       $lookup: {
         from: "sessions",
         localField: "idSession",
         foreignField: "_id",
         as: "session",
+      },
+    },
+    {
+      $unwind: {
+        path: "$session",
+        preserveNullAndEmptyArrays: true,
       },
     },
     {
@@ -68,10 +70,13 @@ router.get("/get", async (req, res) => {
         preserveNullAndEmptyArrays: true,
       },
     },
+    { $sort: { idHall: 1, idSession: 1 } },
     {
-      $unwind: {
-        path: "$session",
-        preserveNullAndEmptyArrays: true,
+      $lookup: {
+        from: "halls",
+        localField: "idHall",
+        foreignField: "_id",
+        as: "hall",
       },
     },
     {
@@ -80,7 +85,29 @@ router.get("/get", async (req, res) => {
         preserveNullAndEmptyArrays: true,
       },
     },
+    {
+      $lookup: {
+        from: "cinemas",
+        localField: "hall.idCinema",
+        foreignField: "_id",
+        as: "cinema",
+      },
+    },
+    {
+      $unwind: {
+        path: "$cinema",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $match: {
+        idMovieInfo: ObjectId(req.params.id),
+        date: new Date(req.body.dateWatching),
+      },
+    },
   ]);
-  res.send(x);
+  console.log(sessions.length);
+  res.send(sessions);
 });
 module.exports = router;

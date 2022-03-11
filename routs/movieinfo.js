@@ -74,7 +74,7 @@ router.post("/getfilms", async (req, res) => {
   }
 });
 router.post("/category", async (req, res) => {
-  let limit = 4;
+  let limit = 8;
   const nameCategory = req.body.category;
   let dataNow = new Date();
   const allFilmsNow = await MovieInfo.aggregate([
@@ -93,6 +93,10 @@ router.post("/category", async (req, res) => {
   console.log(maxPage);
   console.log(skipedArr);
   res.send({ maxPage, skipedArr });
+});
+
+router.get("/getinfo/:id", async (req, res) => {
+  res.send(await MovieInfo.findOne({ _id: req.params.id }));
 });
 
 module.exports = router;

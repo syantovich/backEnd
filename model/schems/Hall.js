@@ -6,9 +6,9 @@ module.exports = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
   },
-  places: [[]],
   name: {
     type: String,
     required: true,
   },
+  places: [[]],
 });
