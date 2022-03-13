@@ -39,7 +39,80 @@ router.post("/addmovie", async (req, res) => {
     }
   );
 });
+router.get("/get/session/:_id", async (req, res) => {
+  let { _id } = req.params;
+  let response = await Movie.aggregate([
+    {
+      $lookup: {
+        from: "sessions",
+        localField: "idSession",
+        foreignField: "_id",
+        as: "session",
+      },
+    },
+    {
+      $unwind: {
+        path: "$session",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "movieinfos",
+        localField: "idMovieInfo",
+        foreignField: "_id",
+        as: "info",
+      },
+    },
+    {
+      $unwind: {
+        path: "$info",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "halls",
+        localField: "idHall",
+        foreignField: "_id",
+        as: "hall",
+      },
+    },
+    {
+      $unwind: {
+        path: "$hall",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "cinemas",
+        localField: "hall.idCinema",
+        foreignField: "_id",
+        as: "cinema",
+      },
+    },
+    {
+      $unwind: {
+        path: "$cinema",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
 
+    {
+      $match: {
+        _id: ObjectId(_id),
+      },
+    },
+  ]);
+  console.log(response);
+  if (response.length > 0) {
+    res.send(response[0]);
+  } else {
+    res.status(404);
+    res.send({});
+  }
+});
 router.post("/get/:id", async (req, res) => {
   let sessions = await Movie.aggregate([
     {
@@ -110,4 +183,5 @@ router.post("/get/:id", async (req, res) => {
   console.log(sessions.length);
   res.send(sessions);
 });
+
 module.exports = router;
