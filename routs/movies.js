@@ -13,7 +13,7 @@ const MovieInfo = mongoose.model("movieinfo", movieInfoShema);
 
 router.post("/addmovie", async (req, res) => {
   let hall = await Hall.findOne({ _id: req.body.idHall });
-  console.log(hall);
+
   let Arr = hall.places.map((e) => {
     e = e.map(() => {
       return 0;
@@ -30,7 +30,6 @@ router.post("/addmovie", async (req, res) => {
     },
     (err, doc) => {
       if (!err) {
-        console.log(doc);
         res.status(200);
         res.send(doc);
       } else {
@@ -105,7 +104,6 @@ router.get("/get/session/:_id", async (req, res) => {
       },
     },
   ]);
-  console.log(response);
   if (response.length > 0) {
     res.send(response[0]);
   } else {
@@ -180,7 +178,6 @@ router.post("/get/:id", async (req, res) => {
       },
     },
   ]);
-  console.log(sessions.length);
   res.send(sessions);
 });
 

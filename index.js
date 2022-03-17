@@ -11,6 +11,7 @@ const hallsRouts = require("./routs/halls");
 const movieRouts = require("./routs/movies");
 const sessionRouts = require("./routs/sessions");
 const movieInfoRouts = require("./routs/movieinfo");
+const socketsInit = require("./socket/socket.js").socketsInit;
 const cors = require("cors");
 
 mongoose.connect("mongodb://localhost:27017/usersdb", {
@@ -55,6 +56,14 @@ app.use("/movieinfo", movieInfoRouts);
 app.use("/session", sessionRouts);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, (err) => {
+const server = app.listen(PORT, (err) => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+const io = require("socket.io")(server, {
+  serverClient: true,
+  cors: {
+    origin: "*",
+  },
+});
+socketsInit(io);
